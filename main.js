@@ -4,25 +4,28 @@ const glados = async () => {
   try {
     const headers = {
       'cookie': cookie,
-      'referer': 'https://readpaper.com/',
-      'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 Edg/120.0.0.0',
+      'referer': 'https://glados.rocks/console/checkin',
+      'user-agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)',
     }
-    const response = await fetch('https://readpaper.com/', {
+    const checkin = await fetch('https://glados.rocks/api/user/checkin', {
+      method: 'POST',
+      headers: { ...headers, 'content-type': 'application/json' },
+      body: '{"token":"glados.one"}',
+    }).then((r) => r.json())
+    const status = await fetch('https://glados.rocks/api/user/status', {
       method: 'GET',
       headers,
-    })
-    // console.log(response.status)
-//    console.log(status)
+    }).then((r) => r.json())
     return [
       'Checkin OK',
-      // `${checkin.message}`,
-      `check status ${response.status}`
+      `${checkin.message}`,
+      `Left Days ${Number(status.data.leftDays)}`,
     ]
   } catch (error) {
     return [
-      'Checkin Error readpaper',
+      'Checkin Error',
       `${error}`,
-      // `<${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}>`,
+      `<${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}>`,
     ]
   }
 }
@@ -43,7 +46,7 @@ const notify = async (contents) => {
 }
 
 const main = async () => {
-    await notify(await glados())
+  await notify(await glados())
 }
 
 main()
